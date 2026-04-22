@@ -1,4 +1,5 @@
 import { webcrypto } from 'crypto';
+import type { EncryptedPayload, StorageAdapter } from '../types';
 
 if (!globalThis.crypto) {
   // @ts-expect-error - Polyfill for Node.js environment
@@ -12,16 +13,16 @@ if (!globalThis.atob) {
 }
 
 import { SecureStorageManager } from '../secure-storage-manager';
-import { StorageAdapter, AccountData, SessionKeysData } from '../types';
+import type { AccountData, SessionKeysData } from '../types';
 
 class MockStorageAdapter implements StorageAdapter {
-  private store: Map<string, any> = new Map();
+  private store = new Map<string, unknown>();
 
-  async get(key: string): Promise<any> {
-    return this.store.get(key) || null;
+  async get<T>(key: string): Promise<T | null> {
+    return (this.store.get(key) as T | undefined) ?? null;
   }
 
-  async set(key: string, value: any): Promise<void> {
+  async set<T>(key: string, value: T): Promise<void> {
     this.store.set(key, value);
   }
 
@@ -29,7 +30,7 @@ class MockStorageAdapter implements StorageAdapter {
     this.store.delete(key);
   }
 
-  public inspectStore(): Map<string, any> {
+  public inspectStore(): Map<string, unknown> {
     return this.store;
   }
 }
@@ -52,7 +53,7 @@ describe('SecureStorageManager', () => {
     expect(unlockResult).toBe(true);
     await manager.saveAccount(accountData);
 
-    const storedData = await storage.get('account');
+    const storedData = await storage.get<EncryptedPayload>('account');
     expect(storedData).toBeDefined();
 
     // Ensure it's not plaintext

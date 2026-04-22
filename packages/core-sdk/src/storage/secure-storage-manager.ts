@@ -272,7 +272,7 @@ export class SecureStorageManager {
   }
 
   public async getAccount(): Promise<AccountData | null> {
-    const payload = (await this.storage.get('account')) as EncryptedPayload | null;
+    const payload = await this.storage.get<EncryptedPayload>('account');
     if (!payload) return null;
     const json = await this.decryptData(payload);
     this.touch();
@@ -286,7 +286,7 @@ export class SecureStorageManager {
   }
 
   public async getSessionKeys(): Promise<SessionKeysData | null> {
-    const payload = (await this.storage.get('sessionKeys')) as EncryptedPayload | null;
+    const payload = await this.storage.get<EncryptedPayload>('sessionKeys');
     if (!payload) return null;
     const json = await this.decryptData(payload);
     this.touch();
