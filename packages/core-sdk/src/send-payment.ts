@@ -13,7 +13,10 @@ import type { Transaction } from '@stellar/stellar-sdk';
 import type { TransactionResult } from '@ancore/types';
 import { StellarClient } from '@ancore/stellar';
 
-import { AccountTransactionBuilder, type AccountTransactionBuilderOptions } from './account-transaction-builder';
+import {
+  AccountTransactionBuilder,
+  type AccountTransactionBuilderOptions,
+} from './account-transaction-builder';
 import {
   AncoreSdkError,
   BuilderValidationError,
@@ -156,7 +159,9 @@ function validateSendPaymentParams(params: SendPaymentParams): void {
     throw new BuilderValidationError('sendPayment: "amount" must be a positive numeric string.');
   }
   if (!params.signer || typeof params.signer.sign !== 'function') {
-    throw new BuilderValidationError('sendPayment: "signer" must implement the PaymentSigner interface.');
+    throw new BuilderValidationError(
+      'sendPayment: "signer" must implement the PaymentSigner interface.'
+    );
   }
 }
 

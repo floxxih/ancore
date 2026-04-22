@@ -103,7 +103,7 @@ describe('SecureStorageManager', () => {
     manager.lock();
     const newManager = new SecureStorageManager(storage);
     const wrongPasswordResult = await newManager.unlock('wrong_password');
-    
+
     // Wrong password should return false
     expect(wrongPasswordResult).toBe(false);
     // Manager should remain locked

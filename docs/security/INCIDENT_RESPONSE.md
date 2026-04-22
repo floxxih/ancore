@@ -11,7 +11,9 @@ Ancore's incident response program is designed to provide a structured approach 
 ### Core Team Roles
 
 #### Incident Commander (IC)
+
 **Primary Responsibilities**:
+
 - Overall incident coordination and management
 - Decision-making authority during incidents
 - Team coordination and resource allocation
@@ -19,6 +21,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - Post-incident review leadership
 
 **Required Skills**:
+
 - Technical leadership experience
 - Crisis management capabilities
 - Communication skills
@@ -26,7 +29,9 @@ Ancore's incident response program is designed to provide a structured approach 
 - Decision-making under pressure
 
 #### Security Lead
+
 **Primary Responsibilities**:
+
 - Technical investigation and analysis
 - Vulnerability assessment and exploitation analysis
 - Forensic evidence collection and preservation
@@ -34,6 +39,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - Security tool deployment and monitoring
 
 **Required Skills**:
+
 - Security expertise (blockchain, cryptography, application security)
 - Forensic analysis capabilities
 - Malware analysis skills
@@ -41,7 +47,9 @@ Ancore's incident response program is designed to provide a structured approach 
 - Incident investigation experience
 
 #### Engineering Lead
+
 **Primary Responsibilities**:
+
 - System and application impact assessment
 - Technical remediation implementation
 - Infrastructure and deployment coordination
@@ -49,6 +57,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - System recovery and restoration
 
 **Required Skills**:
+
 - Software engineering expertise
 - System administration knowledge
 - DevOps and deployment experience
@@ -56,7 +65,9 @@ Ancore's incident response program is designed to provide a structured approach 
 - Problem-solving capabilities
 
 #### Communications Lead
+
 **Primary Responsibilities**:
+
 - Internal and external communication management
 - User notification and guidance
 - Public relations and media coordination
@@ -64,6 +75,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - Documentation and reporting
 
 **Required Skills**:
+
 - Communication and writing skills
 - Public relations experience
 - Crisis communication capabilities
@@ -71,7 +83,9 @@ Ancore's incident response program is designed to provide a structured approach 
 - Multilingual capabilities (preferred)
 
 #### Legal/Compliance Lead
+
 **Primary Responsibilities**:
+
 - Legal assessment and guidance
 - Regulatory compliance requirements
 - Law enforcement coordination
@@ -79,6 +93,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - Legal documentation and reporting
 
 **Required Skills**:
+
 - Legal expertise (technology, financial services)
 - Regulatory knowledge
 - Law enforcement liaison experience
@@ -88,18 +103,21 @@ Ancore's incident response program is designed to provide a structured approach 
 ### Support Roles
 
 #### Customer Support
+
 - User assistance and guidance
 - Support ticket management
 - User communication coordination
 - Recovery assistance
 
 #### Infrastructure/Operations
+
 - System monitoring and maintenance
 - Log collection and analysis
 - Network and server management
 - Performance optimization
 
 #### Quality Assurance
+
 - Testing and validation
 - Regression testing
 - User acceptance testing
@@ -110,9 +128,11 @@ Ancore's incident response program is designed to provide a structured approach 
 ### Severity Levels
 
 #### Critical (Severity 1)
+
 **Definition**: Incidents with immediate and severe impact on user funds, system integrity, or platform availability.
 
 **Examples**:
+
 - Private key compromise or theft
 - Smart contract vulnerability exploitation
 - Unauthorized fund transfers
@@ -124,9 +144,11 @@ Ancore's incident response program is designed to provide a structured approach 
 **Communication**: Immediate user notification
 
 #### High (Severity 2)
+
 **Definition**: Incidents with significant impact on system security, user data, or platform functionality.
 
 **Examples**:
+
 - Session key abuse or exploitation
 - Partial system outage
 - Data breach affecting multiple users
@@ -138,9 +160,11 @@ Ancore's incident response program is designed to provide a structured approach 
 **Communication**: Within 4 hours
 
 #### Medium (Severity 3)
+
 **Definition**: Incidents with moderate impact on system operations or limited user impact.
 
 **Examples**:
+
 - Limited performance issues
 - Single user account compromise
 - Minor security vulnerability
@@ -152,9 +176,11 @@ Ancore's incident response program is designed to provide a structured approach 
 **Communication**: Within 24 hours
 
 #### Low (Severity 4)
+
 **Definition**: Incidents with minimal impact on system operations or user experience.
 
 **Examples**:
+
 - Documentation issues
 - Minor configuration problems
 - Non-security related bugs
@@ -168,6 +194,7 @@ Ancore's incident response program is designed to provide a structured approach 
 ### Incident Categories
 
 #### Security Incidents
+
 - Unauthorized access
 - Data breaches
 - Malware infections
@@ -175,6 +202,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - Social engineering attacks
 
 #### Operational Incidents
+
 - System outages
 - Performance degradation
 - Infrastructure failures
@@ -182,6 +210,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - Service disruptions
 
 #### Financial Incidents
+
 - Fund losses
 - Transaction failures
 - Payment processing issues
@@ -189,6 +218,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - Regulatory compliance issues
 
 #### Compliance Incidents
+
 - Regulatory violations
 - Data privacy breaches
 - Audit failures
@@ -200,6 +230,7 @@ Ancore's incident response program is designed to provide a structured approach 
 ### Phase 1: Detection and Analysis
 
 #### Detection Methods
+
 - **Automated Monitoring**: Security monitoring tools and alerts
 - **User Reports**: User-reported issues and vulnerabilities
 - **Internal Reports**: Employee-reported security concerns
@@ -207,6 +238,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **Security Scans**: Regular vulnerability assessments and penetration tests
 
 #### Initial Assessment
+
 1. **Incident Triage**: Initial severity assessment and categorization
 2. **Impact Analysis**: Determine affected systems, users, and data
 3. **Urgency Evaluation**: Assess time sensitivity and potential damage
@@ -214,6 +246,7 @@ Ancore's incident response program is designed to provide a structured approach 
 5. **Escalation Decision**: Decide on escalation level and notifications
 
 #### Information Gathering
+
 - **Timeline Creation**: Establish incident timeline and chronology
 - **Evidence Collection**: Collect and preserve forensic evidence
 - **System Analysis**: Analyze affected systems and applications
@@ -223,6 +256,7 @@ Ancore's incident response program is designed to provide a structured approach 
 ### Phase 2: Containment, Eradication, and Recovery
 
 #### Containment Strategies
+
 - **Immediate Isolation**: Isolate affected systems from network
 - **Access Restriction**: Restrict access to compromised accounts
 - **Service Suspension**: Temporarily suspend affected services
@@ -230,6 +264,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **Evidence Preservation**: Preserve evidence for investigation
 
 #### Eradication Activities
+
 - **Vulnerability Patching**: Patch identified vulnerabilities
 - **Malware Removal**: Remove malicious software and backdoors
 - **Account Recovery**: Recover compromised accounts
@@ -237,6 +272,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **Configuration Updates**: Update security configurations
 
 #### Recovery Procedures
+
 - **System Restoration**: Restore systems to secure state
 - **Data Recovery**: Recover lost or corrupted data
 - **Service Restoration**: Restore normal service operations
@@ -246,6 +282,7 @@ Ancore's incident response program is designed to provide a structured approach 
 ### Phase 3: Post-Incident Activity
 
 #### Documentation and Reporting
+
 - **Incident Report**: Comprehensive incident documentation
 - **Root Cause Analysis**: Detailed root cause analysis
 - **Lessons Learned**: Document lessons learned and improvements
@@ -253,6 +290,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **Stakeholder Communication**: Communicate with stakeholders
 
 #### Process Improvement
+
 - **Response Plan Updates**: Update incident response procedures
 - **Security Enhancements**: Implement security improvements
 - **Training Updates**: Update team training and awareness
@@ -264,6 +302,7 @@ Ancore's incident response program is designed to provide a structured approach 
 ### Internal Communication
 
 #### Team Notification
+
 - **Immediate Alert**: Immediate notification to core team
 - **Situation Briefing**: Regular situation briefings during incident
 - **Status Updates**: Regular status updates to all team members
@@ -271,6 +310,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **Escalation Notifications**: Proper escalation notifications
 
 #### Internal Coordination
+
 - **Regular Meetings**: Regular coordination meetings during incident
 - **Task Assignment**: Clear task assignment and responsibility
 - **Progress Tracking**: Track progress and milestones
@@ -280,6 +320,7 @@ Ancore's incident response program is designed to provide a structured approach 
 ### External Communication
 
 #### User Communication
+
 - **Immediate Notification**: Immediate notification to affected users
 - **Regular Updates**: Regular updates on incident progress
 - **Recovery Guidance**: Clear guidance for user recovery
@@ -287,6 +328,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **Compensation Information**: Information on compensation or remedies
 
 #### Public Communication
+
 - **Public Statements**: Carefully crafted public statements
 - **Media Relations**: Coordinated media communication
 - **Community Updates**: Community forum and social media updates
@@ -294,6 +336,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **Reassurance**: Reassurance about system security and recovery
 
 #### Regulatory Communication
+
 - **Regulatory Notifications**: Timely notification to regulators
 - **Compliance Reporting**: Complete required compliance reports
 - **Legal Coordination**: Coordinate with legal team on communications
@@ -305,6 +348,7 @@ Ancore's incident response program is designed to provide a structured approach 
 ### Escalation Criteria
 
 #### Immediate Escalation
+
 - **Critical Incidents**: All critical incidents require immediate escalation
 - **User Fund Loss**: Any incident involving user fund loss
 - **System Compromise**: System-wide compromise or breach
@@ -312,6 +356,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **Media Attention**: Incidents attracting media attention
 
 #### Time-Based Escalation
+
 - **No Response**: Escalate if no response within specified timeframes
 - **Progress Delays**: Escalate if incident resolution is delayed
 - **Resource Shortages**: Escalate if additional resources are needed
@@ -321,18 +366,21 @@ Ancore's incident response program is designed to provide a structured approach 
 ### Escalation Levels
 
 #### Level 1: Core Team
+
 - **Incident Commander**: Primary decision maker
 - **Security Lead**: Technical investigation lead
 - **Engineering Lead**: Technical remediation lead
 - **Communications Lead**: Communication coordination
 
 #### Level 2: Management
+
 - **CTO/VP Engineering**: Technical oversight and resources
 - **CISO/Security Director**: Security oversight and strategy
 - **VP Operations**: Operational support and resources
 - **General Counsel**: Legal oversight and guidance
 
 #### Level 3: Executive
+
 - **CEO**: Executive oversight and major decisions
 - **Board of Directors**: Major incident notification and oversight
 - **External Advisors**: External expert consultation
@@ -341,6 +389,7 @@ Ancore's incident response program is designed to provide a structured approach 
 ## Tools and Resources
 
 ### Monitoring and Detection Tools
+
 - **Security Information and Event Management (SIEM)**: Centralized log management
 - **Intrusion Detection Systems (IDS)**: Network and host-based detection
 - **Vulnerability Scanners**: Automated vulnerability assessment
@@ -348,6 +397,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **Security Analytics**: Advanced security analytics and ML
 
 ### Communication Tools
+
 - **Incident Response Platform**: Dedicated incident management platform
 - **Secure Communication**: Encrypted communication channels
 - **Mass Notification**: Mass notification systems for user communication
@@ -355,6 +405,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **Documentation Systems**: Secure documentation and knowledge management
 
 ### Forensic Tools
+
 - **Memory Analysis**: Memory forensics and analysis tools
 - **Disk Analysis**: Disk and file system forensics
 - **Network Analysis**: Network traffic analysis and forensics
@@ -364,6 +415,7 @@ Ancore's incident response program is designed to provide a structured approach 
 ## Training and Preparedness
 
 ### Team Training
+
 - **Incident Response Training**: Regular incident response training
 - **Security Awareness**: Security awareness and best practices
 - **Technical Skills**: Technical skill development and certification
@@ -371,6 +423,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **Legal and Regulatory**: Legal and regulatory compliance training
 
 ### Drills and Exercises
+
 - **Tabletop Exercises**: Regular tabletop incident response exercises
 - **Simulated Incidents**: Simulated incident response drills
 - **Cross-Functional Exercises**: Cross-team coordination exercises
@@ -378,6 +431,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **After-Action Reviews**: Post-exercise reviews and improvements
 
 ### Documentation Maintenance
+
 - **Plan Updates**: Regular updates to incident response plans
 - **Contact Lists**: Updated contact information and escalation lists
 - **Playbooks**: Detailed playbooks for common incident types
@@ -387,6 +441,7 @@ Ancore's incident response program is designed to provide a structured approach 
 ## Legal and Regulatory Considerations
 
 ### Regulatory Requirements
+
 - **Financial Regulations**: Compliance with financial service regulations
 - **Data Protection**: Compliance with data protection and privacy laws
 - **Cybersecurity Regulations**: Compliance with cybersecurity regulations
@@ -394,6 +449,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **Audit Requirements**: Audit trail and documentation requirements
 
 ### Legal Considerations
+
 - **Liability Assessment**: Legal liability assessment and management
 - **Insurance Coverage**: Cyber insurance coverage and claims
 - **Law Enforcement Coordination**: Law enforcement notification and cooperation
@@ -403,6 +459,7 @@ Ancore's incident response program is designed to provide a structured approach 
 ## Metrics and Improvement
 
 ### Key Performance Indicators
+
 - **Mean Time to Detect (MTTD)**: Average time to detect incidents
 - **Mean Time to Respond (MTTR)**: Average time to respond to incidents
 - **Mean Time to Recover (MTTR)**: Average time to recover from incidents
@@ -410,6 +467,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **User Impact**: Impact on users and services
 
 ### Continuous Improvement
+
 - **Regular Reviews**: Regular reviews of incident response performance
 - **Process Optimization**: Continuous process improvement and optimization
 - **Tool Enhancement**: Regular tool evaluation and enhancement
@@ -419,6 +477,7 @@ Ancore's incident response program is designed to provide a structured approach 
 ## Contacts and Resources
 
 ### Emergency Contacts
+
 - **Incident Commander**: [Contact Information]
 - **Security Lead**: [Contact Information]
 - **Engineering Lead**: [Contact Information]
@@ -426,6 +485,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **Legal/Compliance Lead**: [Contact Information]
 
 ### External Resources
+
 - **Law Enforcement**: [Local Law Enforcement Contact]
 - **Cybersecurity Agencies**: [Relevant Cybersecurity Agencies]
 - **Regulatory Bodies**: [Relevant Regulatory Bodies]
@@ -433,6 +493,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - **Legal Counsel**: [External Legal Counsel]
 
 ### Community Resources
+
 - **Security Communities**: [Relevant Security Communities]
 - **Industry Groups**: [Industry Security Groups]
 - **Information Sharing**: [Threat Intelligence Sharing Groups]
@@ -442,6 +503,7 @@ Ancore's incident response program is designed to provide a structured approach 
 ## References
 
 ### Standards and Frameworks
+
 - NIST Cybersecurity Framework
 - ISO 27001 Information Security Management
 - SANS Incident Response Framework
@@ -449,6 +511,7 @@ Ancore's incident response program is designed to provide a structured approach 
 - ITIL Incident Management
 
 ### Industry Best Practices
+
 - Financial Services Sector Best Practices
 - Blockchain Security Guidelines
 - Cryptocurrency Security Standards

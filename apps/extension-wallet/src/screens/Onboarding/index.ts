@@ -1,6 +1,6 @@
 /**
  * Onboarding Screen Components
- * 
+ *
  * Complete onboarding flow for new users:
  * - Welcome: Introduction to Ancore wallet
  * - Mnemonic: Display and backup recovery phrase

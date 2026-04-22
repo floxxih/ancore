@@ -108,20 +108,21 @@ The contract uses structured error codes to provide clear feedback for failure c
 
 ### Error Code Reference
 
-| Error Code | Variant | Description |
-|------------|---------|-------------|
-| 1 | `AlreadyInitialized` | Account is already initialized |
-| 2 | `NotInitialized` | Account is not initialized |
-| 3 | `Unauthorized` | Caller is not authorized |
-| 4 | `InvalidNonce` | Invalid nonce provided |
-| 5 | `SessionKeyNotFound` | Session key not found |
-| 6 | `SessionKeyExpired` | Session key has expired |
-| 7 | `InsufficientPermission` | Insufficient permissions |
-| 8 | `InvalidVersion` | Invalid version provided for migration |
+| Error Code | Variant                  | Description                            |
+| ---------- | ------------------------ | -------------------------------------- |
+| 1          | `AlreadyInitialized`     | Account is already initialized         |
+| 2          | `NotInitialized`         | Account is not initialized             |
+| 3          | `Unauthorized`           | Caller is not authorized               |
+| 4          | `InvalidNonce`           | Invalid nonce provided                 |
+| 5          | `SessionKeyNotFound`     | Session key not found                  |
+| 6          | `SessionKeyExpired`      | Session key has expired                |
+| 7          | `InsufficientPermission` | Insufficient permissions               |
+| 8          | `InvalidVersion`         | Invalid version provided for migration |
 
 ### Error Handling Examples
 
 #### SDK Integration
+
 ```rust
 match contract_result {
     Ok(result) => handle_success(result),
@@ -139,6 +140,7 @@ match contract_result {
 ```
 
 #### Frontend Integration
+
 ```javascript
 try {
     await contract.execute(params);
@@ -176,39 +178,51 @@ The contract emits structured events for all state-changing operations. These ev
 
 #### Account Initialization
 ```
+
 Topic: initialized
 Data: 0x1234567890abcdef... (owner Address)
+
 ```
 
 #### Transaction Execution
 ```
+
 Topic: executed
 Data: (0x1234567890abcdef..., Symbol("transfer"), 42)
+
 ```
 
 #### Session Key Addition
 ```
+
 Topic: session_key_added
 Data: (0xabcdef1234567890..., 1735689600) // (public_key, expires_at)
+
 ```
 
 #### Session Key Revocation
 ```
+
 Topic: session_key_revoked
 Data: 0xabcdef1234567890... // public_key
+
 ```
 
 #### Contract Upgrade
 ```
+
 Topic: upgraded
 Data: 0x1234567890abcdef... // new_wasm_hash
+
 ```
 
 #### Migration
 ```
+
 Topic: migrated
 Data: (1, 2) // (old_version, new_version)
-```
+
+````
 
 ## Development
 
@@ -229,7 +243,7 @@ cargo test
 
 # Build optimized WASM
 cargo build --target wasm32-unknown-unknown --release
-```
+````
 
 ## License
 

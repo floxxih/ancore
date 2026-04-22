@@ -27,6 +27,7 @@ module.exports = [
       },
       globals: {
         Buffer: 'readonly',
+        BufferSource: 'readonly',
         TextEncoder: 'readonly',
         TextDecoder: 'readonly',
         CryptoKey: 'readonly',

@@ -5,7 +5,6 @@
 
 import type { AccountContractReadOptions } from './account-contract';
 import { AccountContract } from './account-contract';
-import { scValToAddress, scValToU64 } from './xdr-utils';
 
 /**
  * Get the owner address of an account abstraction contract.

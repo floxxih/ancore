@@ -9,6 +9,7 @@ const nodeGlobals = {
   Buffer: 'readonly',
   console: 'readonly',
   process: 'readonly',
+  TextEncoder: 'readonly',
   setTimeout: 'readonly',
   clearTimeout: 'readonly',
   setInterval: 'readonly',

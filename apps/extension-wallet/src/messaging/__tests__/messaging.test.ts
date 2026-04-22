@@ -23,7 +23,6 @@ import type { MessageEnvelope, ResponseEnvelope } from '../types';
 // Allow tests to set the chrome global (the module-level `declare const chrome`
 // declarations in sender.ts / handler.ts resolve to globalThis.chrome at runtime).
 declare global {
-  // eslint-disable-next-line no-var
   var chrome: unknown;
 }
 
@@ -365,7 +364,6 @@ describe('dispatcher — handler invocation', () => {
 
   it('handles a non-Error thrown value gracefully', async () => {
     registerHandler('LOCK_WALLET', async () => {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
       throw 'string rejection';
     });
 

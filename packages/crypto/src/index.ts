@@ -7,12 +7,11 @@ export const CRYPTO_VERSION = '0.1.0';
 
 export { verifySignature, signTransaction } from './signing';
 export { validatePasswordStrength } from './password';
-export { validateMnemonic } from './mnemonic';
 export { encryptSecretKey, decryptSecretKey } from './encryption';
 export type { EncryptedSecretKeyPayload } from './encryption';
 export { generateMnemonic, validateMnemonic } from './mnemonic';
-export { 
-  deriveKeypairFromMnemonic, 
-  validateMnemonicForStellar, 
-  deriveMultipleKeypairsFromMnemonic 
+export {
+  deriveKeypairFromMnemonic,
+  validateMnemonicForStellar,
+  deriveMultipleKeypairsFromMnemonic,
 } from './key-derivation';

@@ -11,13 +11,14 @@ module.exports = [
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parser: tsparser,
-      parserOptions,
-      globals: {
-        ...globals.browser,
-        ...globals.node,
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: 'module',
+        ecmaFeatures: { jsx: true },
       },
       globals: {
         ...globals.browser,
+        ...globals.node,
       },
     },
     plugins: {
@@ -48,7 +49,11 @@ module.exports = [
     files: ['**/__tests__/**/*.{ts,tsx}', '**/*.test.{ts,tsx}'],
     languageOptions: {
       parser: tsparser,
-      parserOptions,
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: 'module',
+        ecmaFeatures: { jsx: true },
+      },
       globals: {
         ...globals.browser,
         ...globals.node,
@@ -75,6 +80,7 @@ module.exports = [
         afterAll: 'readonly',
         afterEach: 'readonly',
         jest: 'readonly',
+        vi: 'readonly',
       },
     },
   },

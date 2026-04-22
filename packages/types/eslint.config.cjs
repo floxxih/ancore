@@ -58,6 +58,7 @@ module.exports = [
         afterEach: 'readonly',
         beforeAll: 'readonly',
         afterAll: 'readonly',
+        jest: 'readonly',
       },
     },
     plugins: {
@@ -66,6 +67,7 @@ module.exports = [
     rules: {
       ...tseslint.configs.recommended.rules,
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   {
@@ -76,7 +78,12 @@ module.exports = [
         test: 'readonly',
         it: 'readonly',
         expect: 'readonly',
+        beforeEach: 'readonly',
+        jest: 'readonly',
       },
+    },
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
 ];

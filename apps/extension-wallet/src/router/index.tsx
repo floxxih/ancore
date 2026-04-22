@@ -7,11 +7,6 @@ import helpContent from '../data/help-content.json';
 
 // Lazy-loaded screens
 const HomeScreen = lazy(() => import('../screens/HomeScreen'));
-const ReceiveScreen = lazy(() => import('../screens/ReceiveScreen'));
-const UnlockScreen = lazy(() => import('../screens/UnlockScreen'));
-const TransactionDetail = lazy(() => import('../screens/TransactionDetail'));
-const OnboardingFlow = lazy(() => import('../screens/Onboarding/OnboardingFlow'));
-const SendScreen = lazy(() => import('../screens/Send/SendScreen'));
 const SettingsScreen = lazy(() =>
   import('../screens/Settings/AboutScreen').then((m) => ({ default: m.AboutScreen }))
 );
@@ -157,8 +152,9 @@ export function RouterShell(): JSX.Element {
           </Suspense>
 
           <section className="rounded-3xl border border-dashed border-cyan-400/30 bg-cyan-400/5 p-4 text-sm leading-6 text-cyan-50/90">
-            Zustand stores wired with extension storage persistence. Auto-lock and session management
-            active. Feature-specific screens can replace these placeholders incrementally.
+            Zustand stores wired with extension storage persistence. Auto-lock and session
+            management active. Feature-specific screens can replace these placeholders
+            incrementally.
           </section>
         </main>
       </div>

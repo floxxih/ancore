@@ -2,8 +2,13 @@
  * Unit tests for sendPayment — mocks builder, signer, and stellar client.
  */
 
-import { Account, Asset, Networks, Operation } from '@stellar/stellar-sdk';
-import { sendPayment, type SendPaymentParams, type SendPaymentDeps, type PaymentSigner } from '../send-payment';
+import { Account, Asset, Keypair, Networks, Operation } from '@stellar/stellar-sdk';
+import {
+  sendPayment,
+  type SendPaymentParams,
+  type SendPaymentDeps,
+  type PaymentSigner,
+} from '../send-payment';
 import {
   BuilderValidationError,
   TransactionSubmissionError,
@@ -41,7 +46,10 @@ jest.mock('@ancore/stellar', () => {
     }
   };
   const NetworkError = class extends Error {
-    constructor(msg: string) { super(msg); this.name = 'NetworkError'; }
+    constructor(msg: string) {
+      super(msg);
+      this.name = 'NetworkError';
+    }
   };
   return {
     StellarClient: MockStellarClient,
@@ -70,7 +78,7 @@ const { __mocks: builderMocks } = jest.requireMock('../account-transaction-build
 const { __mocks: stellarMocks } = jest.requireMock('@ancore/stellar') as any;
 
 const DEST = 'GDQERENWDDSQZS7R7WKHZI3BSOYMV3FSWR7TFUYFTKQ447PIX6NREOJM';
-const SOURCE = 'GAAZI4TCR3TY5OJHCTJC2A4QSY6CJWJH5IAJTGKIN2ER7LBNVKOCCWN';
+const SOURCE = Keypair.random().publicKey();
 
 function makeDeps(): SendPaymentDeps {
   const sourceAccount = new Account(SOURCE, '100');
@@ -195,9 +203,9 @@ describe('sendPayment', () => {
     it('wraps signer errors as TransactionSubmissionError', async () => {
       const signer: PaymentSigner = { sign: jest.fn().mockRejectedValue(new Error('key locked')) };
       builderMocks.mockBuild.mockResolvedValue({ toXDR: () => 'raw-xdr' });
-      await expect(
-        sendPayment({ to: DEST, amount: '1', signer }, makeDeps())
-      ).rejects.toThrow(TransactionSubmissionError);
+      await expect(sendPayment({ to: DEST, amount: '1', signer }, makeDeps())).rejects.toThrow(
+        TransactionSubmissionError
+      );
     });
 
     it('wraps network submission errors as TransactionSubmissionError', async () => {
