@@ -16,6 +16,12 @@ import {
   symbolToScVal,
   u64ToScVal,
 } from './xdr-utils';
+import {
+  executeContract,
+  simulateExecute,
+  type ExecuteOptions,
+  type ExecuteResult,
+} from './execute';
 
 /** Options for read calls (getOwner, getNonce, getSessionKey) when using a server */
 export interface AccountContractReadOptions {
@@ -180,6 +186,34 @@ export class AccountContract {
       options
     );
     return scValToOptionalSessionKey(result);
+  }
+
+  /**
+   * Execute a contract method with full transaction submission.
+   * Encodes arguments, submits transaction, and returns typed result.
+   */
+  async executeContract<T = unknown>(
+    to: string,
+    functionName: string,
+    args: unknown[],
+    expectedNonce: number,
+    options: ExecuteOptions
+  ): Promise<ExecuteResult<T>> {
+    return executeContract(this, to, functionName, args, expectedNonce, options);
+  }
+
+  /**
+   * Simulate a contract execution without submitting the transaction.
+   * Useful for testing and gas estimation.
+   */
+  async simulateExecute<T = unknown>(
+    to: string,
+    functionName: string,
+    args: unknown[],
+    expectedNonce: number,
+    options: Omit<ExecuteOptions, 'fee'>
+  ): Promise<T> {
+    return simulateExecute(this, to, functionName, args, expectedNonce, options);
   }
 
   /**
