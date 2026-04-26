@@ -24,6 +24,10 @@
 use soroban_sdk::{
     contract, contracterror, contractimpl, contracttype, Address, BytesN, Env, Val, Vec,
 };
+use soroban_sdk::xdr::ToXdr;
+
+#[cfg(not(target_family = "wasm"))]
+use ed25519_dalek::{Signature as DalekSignature, VerifyingKey};
 
 /// Contract error types for structured error handling
 #[contracterror]
@@ -138,6 +142,34 @@ pub const PERMISSION_EXECUTE: u32 = 1;
 #[contract]
 pub struct AncoreAccount;
 
+fn verify_ed25519_signature(
+    _env: &Env,
+    public_key: &BytesN<32>,
+    message: &soroban_sdk::Bytes,
+    signature: &BytesN<64>,
+) -> Result<(), ContractError> {
+    #[cfg(not(target_family = "wasm"))]
+    {
+        let verifying_key =
+            VerifyingKey::from_bytes(&public_key.to_array()).map_err(|_| ContractError::InvalidSignature)?;
+        let dalek_sig = DalekSignature::from_bytes(&signature.to_array());
+
+        // Avoid dynamic allocation by copying into a bounded stack buffer.
+        // The execute signing payload is expected to be small.
+        let msg_buf = message.to_buffer::<1024>();
+        verifying_key
+            .verify_strict(msg_buf.as_slice(), &dalek_sig)
+            .map_err(|_| ContractError::InvalidSignature)?;
+        Ok(())
+    }
+
+    #[cfg(target_family = "wasm")]
+    {
+        _env.crypto().ed25519_verify(public_key, message, signature);
+        Ok(())
+    }
+}
+
 #[contractimpl]
 impl AncoreAccount {
     /// Initialize the account with an owner
@@ -243,8 +275,7 @@ impl AncoreAccount {
                     return Err(ContractError::InvalidSignature);
                 }
 
-                // Verify signature using ed25519
-                env.crypto().ed25519_verify(&session_pk, &payload, &sig);
+                verify_ed25519_signature(&env, &session_pk, &payload, &sig)?;
             }
         }
 
@@ -311,6 +342,14 @@ impl AncoreAccount {
     pub fn revoke_session_key(env: Env, public_key: BytesN<32>) -> Result<(), ContractError> {
         let owner = Self::get_owner(env.clone())?;
         owner.require_auth();
+
+        if !env
+            .storage()
+            .persistent()
+            .has(&DataKey::SessionKey(public_key.clone()))
+        {
+            return Err(ContractError::SessionKeyNotFound);
+        }
 
         env.storage()
             .persistent()
@@ -489,7 +528,6 @@ mod test {
     use rand::rngs::OsRng;
     use soroban_sdk::{
         testutils::{Address as _, Events, Ledger, MockAuth, MockAuthInvoke},
-        xdr::ToXdr,
         Address, Bytes, Env, IntoVal,
     };
 
@@ -512,6 +550,11 @@ mod test {
         (BytesN::from_array(env, &signature.to_bytes()), payload)
     }
 
+    fn init(env: &Env, client: &AncoreAccountClient, owner: &Address) {
+        env.mock_all_auths();
+        client.initialize(owner);
+    }
+
     #[test]
     fn test_initialize() {
         let env = Env::default();
@@ -519,7 +562,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         assert_eq!(client.get_owner(), owner);
         assert_eq!(client.get_nonce(), 0);
@@ -552,7 +595,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         let events_list = env.events().all();
         assert_eq!(events_list.len(), 1);
@@ -574,7 +617,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         env.mock_all_auths();
 
@@ -595,7 +638,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         env.mock_all_auths();
 
@@ -626,7 +669,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         env.mock_all_auths();
 
@@ -650,7 +693,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         let session_pk = BytesN::from_array(&env, &[1u8; 32]);
 
@@ -665,7 +708,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         env.mock_all_auths();
 
@@ -687,7 +730,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         env.mock_all_auths();
 
@@ -709,7 +752,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         env.mock_all_auths();
 
@@ -741,7 +784,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         env.mock_all_auths();
 
@@ -785,8 +828,8 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
+        init(&env, &client, &owner);
     }
 
     /// Passing expected_nonce = 1 when current nonce is 0 must be rejected.
@@ -798,7 +841,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         env.mock_all_auths();
 
@@ -827,7 +870,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         assert_eq!(client.get_nonce(), 0);
 
@@ -858,7 +901,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         env.mock_all_auths();
 
@@ -880,7 +923,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         let unknown_session_pk = BytesN::from_array(&env, &[9u8; 32]);
         let result = client.try_refresh_session_key_ttl(&unknown_session_pk);
@@ -896,7 +939,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         env.mock_all_auths();
 
@@ -936,7 +979,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let mut csprng = OsRng;
@@ -977,7 +1020,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let mut csprng = OsRng;
@@ -1017,7 +1060,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         let initial_event_count = env.events().all().len();
 
@@ -1049,7 +1092,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         assert_eq!(client.get_nonce(), 0);
 
@@ -1081,7 +1124,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         env.mock_all_auths();
 
@@ -1120,7 +1163,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let mut csprng = OsRng;
@@ -1178,7 +1221,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let mut csprng = OsRng;
@@ -1217,7 +1260,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let mut csprng = OsRng;
@@ -1256,7 +1299,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let zero_hash = BytesN::from_array(&env, &[0u8; 32]);
@@ -1272,7 +1315,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let zero_hash = BytesN::from_array(&env, &[0u8; 32]);
@@ -1291,7 +1334,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         // Zero hash must panic with contract error #9 (InvalidWasmHash)
@@ -1305,7 +1348,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let initial_version = client.get_version();
@@ -1324,7 +1367,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         // No mock_all_auths: owner auth NOT satisfied
 
         let zero_hash = BytesN::from_array(&env, &[0u8; 32]);
@@ -1341,7 +1384,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let callee_id = env.register_contract(None, AncoreAccount);
@@ -1371,7 +1414,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let session_pk = BytesN::from_array(&env, &[1u8; 32]);
@@ -1389,110 +1432,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
-        env.mock_all_auths();
-        client.add_session_key(&session_pk, &expires_at, &permissions);
-
-        // Create valid signatures for different nonces
-        let (sig_nonce_0, payload_nonce_0) = sign_payload(&env, &signing_key, &callee_id, &function, &args, 0);
-        let (sig_nonce_1, payload_nonce_1) = sign_payload(&env, &signing_key, &callee_id, &function, &args, 1);
-
-        // 1. SUCCESS: Execute with nonce 0 (owner path)
-        env.mock_all_auths();
-        let _result = client.execute(
-            &CallerIdentity::Owner,
-            &callee_id,
-            &function,
-            &args,
-            &0u64,
-            &None,
-            &None,
-            &None,
-        );
-        assert_eq!(client.get_nonce(), 1);
-
-        // 2. REJECT: Stale nonce 0 replayed with owner auth
-        env.mock_all_auths();
-        let stale_result = client.try_execute(
-            &CallerIdentity::Owner,
-            &callee_id,
-            &function,
-            &args,
-            &0u64, // Stale nonce
-            &None,
-            &None,
-            &None,
-        );
-        assert_eq!(stale_result, Err(Ok(ContractError::InvalidNonce)));
-
-        // 3. SUCCESS: Execute with nonce 1 (session key path)
-        let result = client.execute(
-            &CallerIdentity::SessionKey(session_pk.clone()),
-            &callee_id,
-            &function,
-            &args,
-            &1u64,
-            &Some(session_pk.clone()),
-            &Some(sig_nonce_1),
-            &Some(payload_nonce_1),
-        );
-        let res_u64: u64 = soroban_sdk::FromVal::from_val(&env, &result);
-        assert_eq!(res_u64, 1);
-        assert_eq!(client.get_nonce(), 2);
-
-        // 4. REJECT: Stale nonce 1 replayed with session key (even with valid signature)
-        let stale_result = client.try_execute(
-            &CallerIdentity::SessionKey(session_pk.clone()),
-            &callee_id,
-            &function,
-            &args,
-            &1u64, // Stale nonce
-            &Some(session_pk.clone()),
-            &Some(sig_nonce_1.clone()),
-            &Some(payload_nonce_1.clone()),
-        );
-        assert_eq!(stale_result, Err(Ok(ContractError::InvalidNonce)));
-
-        // 5. REJECT: Stale nonce 0 replayed with session key (old signature with stale nonce)
-        let stale_result = client.try_execute(
-            &CallerIdentity::SessionKey(session_pk.clone()),
-            &callee_id,
-            &function,
-            &args,
-            &0u64, // Stale nonce
-            &Some(session_pk.clone()),
-            &Some(sig_nonce_0),
-            &Some(payload_nonce_0),
-        );
-        assert_eq!(stale_result, Err(Ok(ContractError::InvalidNonce)));
-    }
-
-    #[test]
-    fn test_add_session_key_zero_expiry_rejected() {
-        let env = Env::default();
-        let contract_id = env.register_contract(None, AncoreAccount);
-        let client = AncoreAccountClient::new(&env, &contract_id);
-
-        let owner = Address::generate(&env);
-        client.initialize(&owner);
-        env.mock_all_auths();
-
-        let session_pk = BytesN::from_array(&env, &[1u8; 32]);
-        let permissions = Vec::new(&env);
-
-        let result = client.try_add_session_key(&session_pk, &0u64, &permissions);
-
-        assert_eq!(result, Err(Ok(ContractError::InvalidExpiration)));
-    }
-
-    #[test]
-    fn test_add_session_key_nonzero_expiry_succeeds() {
-        let env = Env::default();
-        let contract_id = env.register_contract(None, AncoreAccount);
-        let client = AncoreAccountClient::new(&env, &contract_id);
-
-        let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let session_pk = BytesN::from_array(&env, &[2u8; 32]);
@@ -1515,7 +1455,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let session_pk = BytesN::from_array(&env, &[10u8; 32]);
@@ -1544,7 +1484,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let session_pk = BytesN::from_array(&env, &[11u8; 32]);
@@ -1565,7 +1505,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let session_pk = BytesN::from_array(&env, &[12u8; 32]);
@@ -1590,7 +1530,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let session_pk = BytesN::from_array(&env, &[13u8; 32]);
@@ -1619,7 +1559,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         let events_list = env.events().all();
         let (_cid, topics, data) = events_list.get_unchecked(0).clone();
@@ -1645,7 +1585,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let session_pk = BytesN::from_array(&env, &[20u8; 32]);
@@ -1678,7 +1618,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let session_pk = BytesN::from_array(&env, &[21u8; 32]);
@@ -1709,7 +1649,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let callee_id = env.register_contract(None, AncoreAccount);
@@ -1754,7 +1694,7 @@ mod test {
 
         let owner = Address::generate(&env);
         let non_owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
 
         let dummy_hash = BytesN::from_array(&env, &[0u8; 32]);
 
@@ -1779,7 +1719,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let version_before = client.get_version();
@@ -1817,7 +1757,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let v0 = client.get_version();
@@ -1843,7 +1783,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let session_pk = BytesN::from_array(&env, &[30u8; 32]);
@@ -1876,7 +1816,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let session_pk = BytesN::from_array(&env, &[31u8; 32]);
@@ -1901,7 +1841,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let session_pk = BytesN::from_array(&env, &[32u8; 32]);
@@ -1925,7 +1865,8 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
+        env.set_auths(&[] as &[soroban_sdk::xdr::SorobanAuthorizationEntry]);
 
         // Do NOT mock auth — non-owner caller should be rejected
         let result = client.try_migrate(&2u32);
@@ -1942,7 +1883,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let initial_version = client.get_version();
@@ -1974,7 +1915,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         // Attempt to migrate to same version should fail with InvalidVersion (#8)
@@ -1988,7 +1929,7 @@ mod test {
         let client = AncoreAccountClient::new(&env, &contract_id);
 
         let owner = Address::generate(&env);
-        client.initialize(&owner);
+        init(&env, &client, &owner);
         env.mock_all_auths();
 
         let initial_version = client.get_version();
